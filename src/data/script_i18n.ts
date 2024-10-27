@@ -250,46 +250,37 @@ const tryDescribeAction = <T extends ActionType>(
 
   if (actionType === "delay") {
     const config = action as DelayAction;
+    const durationStringTranslationKey = action.randomize
+      ? `${actionTranslationBaseKey}.delay.description.duration_upto_string`
+      : `${actionTranslationBaseKey}.delay.description.duration_string`;
 
     let duration: string;
     if (typeof config.delay === "number") {
-      duration = hass.localize(
-        `${actionTranslationBaseKey}.delay.description.duration_string`,
-        {
-          string: secondsToDuration(config.delay)!,
-        }
-      );
+      duration = hass.localize(durationStringTranslationKey, {
+        string: secondsToDuration(config.delay)!,
+      });
     } else if (typeof config.delay === "string") {
       duration = isTemplate(config.delay)
         ? hass.localize(
             `${actionTranslationBaseKey}.delay.description.duration_template`
           )
-        : hass.localize(
-            `${actionTranslationBaseKey}.delay.description.duration_string`,
-            {
-              string:
-                config.delay ||
-                hass.localize(
-                  `${actionTranslationBaseKey}.delay.description.duration_unknown`
-                ),
-            }
-          );
+        : hass.localize(durationStringTranslationKey, {
+            string:
+              config.delay ||
+              hass.localize(
+                `${actionTranslationBaseKey}.delay.description.duration_unknown`
+              ),
+          });
     } else if (config.delay) {
-      duration = hass.localize(
-        `${actionTranslationBaseKey}.delay.description.duration_string`,
-        {
-          string: formatDuration(hass.locale, config.delay),
-        }
-      );
+      duration = hass.localize(durationStringTranslationKey, {
+        string: formatDuration(hass.locale, config.delay),
+      });
     } else {
-      duration = hass.localize(
-        `${actionTranslationBaseKey}.delay.description.duration_string`,
-        {
-          string: hass.localize(
-            `${actionTranslationBaseKey}.delay.description.duration_unknown`
-          ),
-        }
-      );
+      duration = hass.localize(durationStringTranslationKey, {
+        string: hass.localize(
+          `${actionTranslationBaseKey}.delay.description.duration_unknown`
+        ),
+      });
     }
 
     return hass.localize(`${actionTranslationBaseKey}.delay.description.full`, {

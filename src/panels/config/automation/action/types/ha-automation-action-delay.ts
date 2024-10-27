@@ -1,4 +1,4 @@
-import { html, LitElement, PropertyValues } from "lit";
+import { css, html, LitElement, PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { hasTemplate } from "../../../../../common/string/has-template";
@@ -38,18 +38,46 @@ export class HaDelayAction extends LitElement implements ActionElement {
     }
 
     this._timeData = createDurationData(this.action.delay);
+    this._minimumDelayTimeData = createDurationData(this.action.minimum_delay);
   }
 
   protected render() {
-    return html`<ha-duration-input
-      .label=${this.hass.localize(
-        `ui.panel.config.automation.editor.actions.type.delay.delay`
-      )}
-      .disabled=${this.disabled}
-      .data=${this._timeData}
-      enableMillisecond
-      @value-changed=${this._valueChanged}
-    ></ha-duration-input>`;
+    return html`
+      <ha-duration-input
+        .label=${this.hass.localize(
+          `ui.panel.config.automation.editor.actions.type.delay.delay`
+        )}
+        .disabled=${this.disabled}
+        .data=${this._timeData}
+        enableMillisecond
+        @value-changed=${this._valueChanged}
+      ></ha-duration-input>
+      <ha-formfield
+        .disabled=${this.disabled}
+        .label=${this.hass.localize(
+          "ui.panel.config.automation.editor.actions.type.delay.randomize"
+        )}
+      >
+        <ha-switch
+          .checked=${this.action.randomize ?? false}
+          .disabled=${this.disabled}
+          @change=${this._randomizedChanged}
+        ></ha-switch>
+      </ha-formfield>
+      ${this.action.randomize
+        ? html`
+            <ha-duration-input
+              .label=${this.hass.localize(
+                `ui.panel.config.automation.editor.actions.type.delay.minimum_delay`
+              )}
+              .disabled=${this.disabled}
+              .data=${this._minimumDelayTimeData}
+              enableMillisecond
+              @value-changed=${this._minimumDelayChanged}
+            ></ha-duration-input>
+          `
+        : ""}
+    `;
   }
 
   private _valueChanged(ev: CustomEvent) {
@@ -61,6 +89,37 @@ export class HaDelayAction extends LitElement implements ActionElement {
     fireEvent(this, "value-changed", {
       value: { ...this.action, delay: value },
     });
+  }
+
+  private _minimumDelayChanged(ev: CustomEvent) {
+    ev.stopPropagation();
+    const value = ev.detail.value;
+    if (!value) {
+      return;
+    }
+    fireEvent(this, "value-changed", {
+      value: { ...this.action, minimum_delay: value },
+    });
+  }
+
+  private _randomizedChanged(ev) {
+    fireEvent(this, "value-changed", {
+      value: { ...this.action, randomize: ev.target.checked },
+    });
+  }
+
+  static get styles(): CSSResultGroup {
+    return css`
+      ha-duration-input {
+        display: block;
+        margin-bottom: 24px;
+      }
+
+      ha-formfield {
+        display: block;
+        margin-bottom: 24px;
+      }
+    `;
   }
 }
 

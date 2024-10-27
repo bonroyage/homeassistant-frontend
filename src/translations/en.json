@@ -3347,10 +3347,13 @@
                 "delay": {
                   "label": "Wait for time to pass (delay)",
                   "delay": "Duration",
+                  "randomize": "Randomize the delay up to the specified duration",
+                  "minimum_delay": "Minimum duration (optional)",
                   "description": {
                     "picker": "Wait some time to perform a sequence of actions.",
                     "full": "Delay {duration}",
                     "duration_string": "for {string}",
+                    "duration_upto_string": "up to {string}",
                     "duration_template": "based on a template",
                     "duration_unknown": "a duration"
                   }
